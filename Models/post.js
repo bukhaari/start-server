@@ -26,6 +26,9 @@ const postSchema = new mongoose.Schema(
         ref: "Comments",
       },
     ],
+    image: {
+      type: Array,
+    },
   },
   { timestamps: true }
 );

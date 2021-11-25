@@ -7,6 +7,25 @@ const auth = require("../Middleware/auth");
 const express = require("express");
 const router = express.Router();
 
+//--------Multer Configration ---------//
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+
+  filename: function (req, file, cb) {
+    const newFileName = file.originalname.split(".")[0];
+    const fileType = file.mimetype.split("/")[1];
+    cb(null, newFileName + new Date().getTime() + "." + fileType);
+  },
+});
+
+const upload = multer({ storage: storage });
+//--------------- End of Multer--------------//
+
+//@GET API: of tweet posts --> api/post
 router.get("/", async (req, res) => {
   try {
     const posts = await PostSchema.find()
@@ -29,7 +48,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", [auth], async (req, res) => {
+//@POST API: of tweet post --> api/post
+router.post("/", upload.single("image"), [auth], async (req, res) => {
   try {
     const newData = {
       text: req.body.text,
@@ -48,6 +68,7 @@ router.post("/", [auth], async (req, res) => {
   }
 });
 
+//@POST API: of comments --> api/post/comment
 router.post("/comment", [auth], async (req, res) => {
   try {
     const newData = {
@@ -72,6 +93,7 @@ router.post("/comment", [auth], async (req, res) => {
   }
 });
 
+//@PUT API: of like --> api/post/like
 router.put("/like", [auth], async (req, res) => {
   try {
     const postId = req.body.postId;
