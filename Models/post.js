@@ -4,16 +4,21 @@ const postSchema = new mongoose.Schema(
   {
     text: {
       type: String,
-      required: true,
+      required: [true, "Enter post text?"],
     },
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
-      required: true,
+      required: [true, "Tell who is Created this post?"],
     },
     like: {
-      type: Number,
-      default: 0,
+      amount: { type: Number, default: 0 },
+      likeBy: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Users",
+        },
+      ],
     },
     comments: [
       {
