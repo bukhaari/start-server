@@ -6,6 +6,9 @@ const app = express();
 //All routes app
 require("./start/AllRoutes")(app);
 
+// global uploads file images and files.
+app.use("/uploads", express.static("uploads"));
+
 // connection mongodb
 db_connection();
 

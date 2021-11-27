@@ -4,7 +4,9 @@ const postSchema = new mongoose.Schema(
   {
     text: {
       type: String,
-      required: [true, "Enter post text?"],
+    },
+    image: {
+      type: Array,
     },
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -26,9 +28,6 @@ const postSchema = new mongoose.Schema(
         ref: "Comments",
       },
     ],
-    image: {
-      type: Array,
-    },
   },
   { timestamps: true }
 );
