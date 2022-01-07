@@ -1,3 +1,4 @@
 module.exports = {
-  Customer: "Customer",
+  Customer: "customers",
+  postCollection: "posts",
 };

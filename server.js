@@ -1,7 +1,9 @@
-const db_connection = require("./config/db");
 const express = require("express");
 require("dotenv").config();
 const app = express();
+
+// production middlewarres
+require("./start/production")(app);
 
 //All routes app
 require("./start/AllRoutes")(app);
@@ -10,9 +12,7 @@ require("./start/AllRoutes")(app);
 app.use("/uploads", express.static("uploads"));
 
 // connection mongodb
-db_connection();
+require("./config/db")();
 
-const port = process.env.PORT;
-app.listen(port, () =>
-  console.log(`Server start on port http://localhost:${port}`)
-);
+// set Port
+require("./config/port")(app);

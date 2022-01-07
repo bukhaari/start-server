@@ -30,27 +30,28 @@ router.post("/", upload.single("avatar"), async (req, res) => {
     // destructuring req.boy object
     const { email, name, password } = req.body;
 
-    // get avatar in file
-    const avatar = req.file ? req.file.path : "uploads\\default.png";
-
     // looking on database this user is already exist?
     const getUser = await User.findOne({ email: email });
 
     // checking user is Already
     if (getUser) return res.status(400).send("user is Already registred");
 
+    // get avatar in file
+    const avatar = req.file ? req.file.path : "uploads\\default.png";
+
     // new data from req.body object destructuring
     let newUser = {
       name,
       email,
-      password,
+      password, //122333
       avatar,
     };
 
-    // Jenerate salt
+    // generate salt
     const salt = await bcrypt.genSalt(10);
     //hashing password and update newuser object
     newUser.password = await bcrypt.hash(password, salt);
+
     //schema user
     const user = new User(newUser);
 

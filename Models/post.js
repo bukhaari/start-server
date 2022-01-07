@@ -9,7 +9,7 @@ const postSchema = new mongoose.Schema(
       type: Array,
     },
     postedBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId, // 666677777
       ref: "Users",
       required: [true, "Tell who is Created this post?"],
     },
@@ -40,4 +40,4 @@ const postSchema = new mongoose.Schema(
 const PostModel = mongoose.model("Posts", postSchema);
 
 // module.exports = userSchema;
-module.exports = PostModel;
+module.exports = PostModel

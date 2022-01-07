@@ -3,6 +3,7 @@ const Customer = require("../Router/Customer");
 const User = require("../Router/user");
 const Login = require("../Router/login");
 const Post = require("../Router/post");
+const Dashboard = require("../Router/dashboard");
 const express = require("express");
 const bodyParser = require("body-parser");
 
@@ -18,11 +19,7 @@ function allRoutes(app) {
   app.use("/api/login", Login);
   app.use("/api/post", Post);
   app.use("/api/user", User);
-
-  //main route
-  app.get("/", (req, res) => {
-    res.send("Welcome to Project");
-  });
+  app.use("/api/dashboard", Dashboard);
 }
 
 module.exports = allRoutes;

@@ -1,35 +1,16 @@
-const DynamicDB = require("../Middleware/dynamicDb");
-const { Customer } = require("../utils/AllCollection");
-const PostSchema = require("../Models/post");
-const CommentSchema = require("../Models/comment");
-const admin = require("../Middleware/admin");
-const auth = require("../Middleware/auth");
 const express = require("express");
 const router = express.Router();
+const upload = require("../utils/multer");
+const auth = require("../Middleware/auth");
+const CommentSchema = require("../Models/comment");
 const ObjectId = require("mongoose").Types.ObjectId;
-
-//--------Multer Configration ---------//
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-
-  filename: function (req, file, cb) {
-    const newFileName = file.originalname.split(".")[0];
-    const fileType = file.mimetype.split("/")[1];
-    cb(null, newFileName + new Date().getTime() + "." + fileType);
-  },
-});
-
-const upload = multer({ storage: storage });
-//--------------- End of Multer--------------//
+const PostModel = require("../Models/post");
 
 //@GET API: of tweet posts --> api/post
 router.get("/", async (req, res) => {
   try {
-    const posts = await PostSchema.find()
+
+    const posts = await PostModel.find()
       .populate({ path: "postedBy", select: { name: 1 } })
       .populate({ path: "comments" })
       .populate({
@@ -40,6 +21,7 @@ router.get("/", async (req, res) => {
         path: "like",
         populate: { path: "likeBy", select: { name: 1 } },
       });
+
     res.send(posts);
   } catch (ex) {
     for (feild in ex.errors) {
@@ -63,7 +45,7 @@ router.post("/", upload.array("image"), [auth], async (req, res) => {
       image: req.files ? pathImages : [],
     };
 
-    const newModel = PostSchema(newData);
+    const newModel = PostModel(newData);
     const result = await newModel.save();
 
     res.send(result);
@@ -87,7 +69,7 @@ router.post("/comment", [auth], async (req, res) => {
     const comment = await newModel.save();
 
     const postId = req.body.postId;
-    await PostSchema.findByIdAndUpdate(postId, {
+    await PostModel.findByIdAndUpdate(postId, {
       $addToSet: { comments: [comment._id] },
     });
 
@@ -107,16 +89,17 @@ router.put("/like", [auth], async (req, res) => {
     const likebyId = req.body.likeBy;
 
     // get post in db
-    const posts = await PostSchema.find({ _id: postId });
+    const posts = await PostModel.find({ _id: postId });
 
     //checking this user is already liked. isLiked: true or false
     const [isLiked] = posts.map((p) =>
+      // likeBy is an array of ids.
       p.like.likeBy.includes(ObjectId(likebyId))
     );
 
     // checking is true, if true decrease like amount and delete the user of liked by post.
     if (isLiked) {
-      await PostSchema.findByIdAndUpdate(postId, {
+      await PostModel.findByIdAndUpdate(postId, {
         $inc: { "like.amount": -1 },
         $pull: { "like.likeBy": likebyId },
       });
@@ -129,7 +112,7 @@ router.put("/like", [auth], async (req, res) => {
     }
 
     //if isLiked is not true, increase like amount and add the user of liked by post.
-    await PostSchema.findByIdAndUpdate(postId, {
+    await PostModel.findByIdAndUpdate(postId, {
       $inc: { "like.amount": 1 },
       $addToSet: { "like.likeBy": likebyId },
     });
